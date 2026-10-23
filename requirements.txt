@@ -1,0 +1,12 @@
+# torch, torchvision, pillow, numpy are preinstalled on Colab
+diffusers>=0.30
+transformers>=4.44
+accelerate>=0.33
+open_clip_torch>=2.24
+gradio>=4.44
+pandas>=2.1
+scipy
+scikit-learn
+matplotlib
+krippendorff
+tabulate
