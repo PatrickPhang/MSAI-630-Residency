@@ -1,16 +1,4 @@
-"""Stretch goal: how different are 10 samples of the same prompt? (mode collapse / quality-vs-diversity)
-
-Diversity = mean pairwise cosine DISTANCE between image embeddings of the N samples of one prompt
-(0 = identical images). Reported with two embedders: CLIP (semantic) and DINOv2 (visual/layout).
-
-  python diversity.py                                                # SDXL-Turbo vs SD 1.5
-  python diversity.py --models sd15 --guidance 2 5 7.5 12            # quality-vs-diversity sweep (CFG)
-  python diversity.py --analyze-only                                 # re-make charts from saved images
-
-Expectation to TEST, not assume: SDXL-Turbo is distilled with an adversarial (GAN-style) loss, which
-tends to trade diversity for sharpness (SD 1.5 is plain diffusion, so it is the natural contrast),
-and higher CFG pushes samples toward the mode.
-"""
+"""Diversity test: mean pairwise embedding distance across samples of the same prompt."""
 import argparse
 import itertools
 
@@ -110,7 +98,6 @@ def analyze(ids, use_dino=True):
     df.round(4).to_csv(RESULTS / "diversity.csv", index=False)
     print(df.groupby("run")[[c for c in df.columns if c.endswith("diversity") or c == "clip_score_mean"]].mean().round(4))
 
-    # Model comparison at default settings
     def is_default(r):
         d = DEFAULT_GUIDANCE.get(r["model"])
         return pd.isna(r["cfg"]) or d is None or r["cfg"] == d
@@ -127,7 +114,6 @@ def analyze(ids, use_dino=True):
         fig.savefig(RESULTS / "fig6_diversity_by_model.png")
         plt.close(fig)
 
-    # CFG sweep: quality vs diversity
     sweep = df[df["model"] == "sd15"].dropna(subset=["cfg"])
     if sweep["cfg"].nunique() >= 2:
         metric = "dino_diversity" if "dino_diversity" in sweep else "clip_diversity"

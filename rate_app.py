@@ -1,12 +1,4 @@
-"""Blind human rating app (Gradio).
-
-Raters see one image at a time with the prompt and its checklist. The model name is never shown
-(the image is sent as pixels, not as a file path). The app always serves the image with the fewest
-ratings that this rater hasn't rated yet, so the team covers everything at least twice with no
-coordination needed.
-
-  python rate_app.py --share        # in Colab: gives a public link teammates open on their laptops
-"""
+"""Blind rating app. Serves the least-rated image the rater hasn't seen yet."""
 import argparse
 import json
 import random
@@ -17,7 +9,7 @@ from PIL import Image
 
 from mdb.common import RATINGS_CSV, append_row, list_images, load_prompts, read_csv_or_empty
 
-TARGET = 2  # ratings per image we want before anything gets a third
+TARGET = 2  # ratings per image
 
 
 def load_state():

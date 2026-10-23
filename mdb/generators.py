@@ -1,12 +1,4 @@
-"""Text-to-image backends. Both run locally on one Colab T4 (no API keys, no network at demo time
-beyond the first model download).
-
-Each backend returns (PIL.Image | None, status, info); status is "ok", "refused" or "error".
-
-  sdxl_turbo  stabilityai/sdxl-turbo  2023, ~3.5B UNet, two text encoders (OpenAI CLIP ViT-L + OpenCLIP
-              ViT-bigG), adversarial diffusion distillation, 4 steps, no CFG.
-  sd15        SD 1.5                  2022, ~0.9B UNet, one text encoder (OpenAI CLIP ViT-L), 25 steps, CFG 7.5.
-"""
+"""Local text-to-image backends: SDXL-Turbo and SD 1.5."""
 import gc
 
 import torch
@@ -32,7 +24,6 @@ class SDXLTurbo:
 
 
 class SD15:
-    """Keeps the built-in safety checker on; a flagged image is logged as a refusal (an ethics data point)."""
     name = "sd15"
 
     def __init__(self, steps: int = 25):
@@ -65,6 +56,5 @@ def load_backend(name: str, **kw):
 
 
 def free_gpu():
-    """Call after dropping your last reference to a backend (backend = None) to release its GPU memory."""
     gc.collect()
     torch.cuda.empty_cache()

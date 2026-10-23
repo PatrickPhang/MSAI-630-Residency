@@ -1,8 +1,4 @@
-"""Score every generated image against its prompt with CLIP. Resumable per scorer.
-
-  python score_clip.py                                  # default ViT-H-14
-  python score_clip.py --scorer ViT-B-32:laion2b_s34b_b79k   # optional second grader to compare
-"""
+"""Score each image against its prompt with CLIP. Already-scored images are skipped."""
 import argparse
 
 from PIL import Image

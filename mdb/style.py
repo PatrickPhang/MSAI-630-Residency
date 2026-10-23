@@ -1,12 +1,10 @@
-"""Chart style for slide-ready PNGs. Model colors follow the entity, never the rank."""
+"""Matplotlib style and model colors."""
 import matplotlib
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 
 MODEL_LABELS = {"sdxl_turbo": "SDXL-Turbo", "sd15": "SD 1.5"}
-# First three slots of a CVD-validated categorical palette (they pass all-pairs checks, so they
-# are safe in scatters too). A 3rd model would take slot 3 (#1baf7a); a 4th needs a facet, not a new hue.
 MODEL_COLORS = {"sdxl_turbo": "#2a78d6", "sd15": "#eb6834"}
 INK, INK_2, MUTED, GRID, SURFACE = "#0b0b0b", "#52514e", "#8a8984", "#e6e5e0", "#fcfcfb"
 GOOD, BAD = "#1baf7a", "#e34948"

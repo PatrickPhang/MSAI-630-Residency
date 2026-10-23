@@ -1,4 +1,4 @@
-"""Shared paths, prompt loading, and file helpers for Mini-DrawBench."""
+"""Paths, prompt loading and CSV helpers."""
 import csv
 import os
 import threading
@@ -9,7 +9,6 @@ import pandas as pd
 REPO = Path(__file__).resolve().parent.parent
 PROMPTS_CSV = Path(os.environ.get("MDB_PROMPTS", REPO / "prompts.csv"))
 
-# Everything generated lives under one root so it can sit on Google Drive in Colab.
 DATA = Path(os.environ.get("MDB_DATA", REPO / "data"))
 IMAGES = DATA / "images"
 GENERATIONS_CSV = DATA / "generations.csv"
@@ -53,7 +52,6 @@ def image_path(model: str, prompt_id: str, seed: int, root: Path = IMAGES) -> Pa
 
 
 def list_images(root: Path = IMAGES) -> pd.DataFrame:
-    """Scan the image folder (source of truth) -> model, prompt_id, seed, key, path."""
     rows = []
     if root.exists():
         for model_dir in sorted(p for p in root.iterdir() if p.is_dir()):
@@ -65,7 +63,6 @@ def list_images(root: Path = IMAGES) -> pd.DataFrame:
 
 
 def append_row(path: Path, row: dict):
-    """Thread-safe CSV append; writes the header on first use."""
     with _lock:
         path.parent.mkdir(parents=True, exist_ok=True)
         new = not path.exists() or path.stat().st_size == 0

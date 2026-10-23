@@ -1,10 +1,4 @@
-"""CLIP alignment scorer (OpenCLIP).
-
-CLIPScore here = 100 * max(cos(image, text), 0), the convention used by torchmetrics.
-Default scorer is OpenCLIP ViT-H-14 (LAION-2B). It is deliberately not the exact text encoder
-used by SD 1.5 (OpenAI CLIP ViT-L/14), so we are not grading a model with its own encoder.
-SDXL does use an OpenCLIP encoder (ViT-bigG), so call out that family overlap in the deck.
-"""
+"""CLIPScore = 100 * max(cos(image, text), 0) using OpenCLIP."""
 import os
 
 import torch
@@ -23,7 +17,7 @@ class ClipScorer:
         self.model, _, self.preprocess = open_clip.create_model_and_transforms(arch, pretrained=pretrained)
         self.model = self.model.to(self.device).eval()
         if self.device == "cuda":
-            self.model = self.model.half()  # ~2 GB instead of ~4 GB, leaves room for both pipelines
+            self.model = self.model.half()
         self.tokenizer = open_clip.get_tokenizer(arch)
 
     def _autocast(self):
@@ -46,7 +40,6 @@ class ClipScorer:
         return F.normalize(e.float(), dim=-1)
 
     def score(self, images: list[Image.Image], texts: list[str]) -> list[float]:
-        """Cosine similarity between each image and its paired text."""
         cos = (self.embed_images(images) * self.embed_texts(texts)).sum(-1)
         return cos.cpu().tolist()
 

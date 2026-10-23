@@ -1,20 +1,4 @@
-"""Turn generations + CLIP scores + human ratings into tables, charts, and a numbers report.
-
-  python analyze.py                       # uses the default CLIP scorer
-  python analyze.py --scorer ViT-B-32:laion2b_s34b_b79k
-
-Outputs (in data/results/):
-  summary_by_category.csv     model x category: CLIP mean, human pass rate, refusals
-  agreement.csv               CLIP vs human agreement, overall / per category / per model
-  disagreements.csv           images where CLIP and humans disagree most ("CLIP fooled" / "CLIP too harsh")
-  rater_agreement.csv         inter-rater reliability (Krippendorff alpha, pairwise Cohen kappa)
-  fig1_human_pass_by_category.png
-  fig2_clip_by_category.png
-  fig3_clip_vs_human.png      small multiples, one panel per category
-  fig4_clip_agreement_by_category.png
-  fig5_failure_gallery.png    each model's most embarrassing failures with CLIP score
-  report.md                   every headline number, ready to paste into slides
-"""
+"""Build summary tables, charts and report.md from CLIP scores and human ratings."""
 import argparse
 import itertools
 import json
@@ -35,7 +19,6 @@ style.apply()
 import matplotlib.pyplot as plt  # noqa: E402
 
 
-# ----------------------------------------------------------------------------- data
 def load(scorer):
     prompts = load_prompts()
     clip = read_csv_or_empty(CLIP_CSV)
@@ -44,7 +27,6 @@ def load(scorer):
     clip = clip[clip["scorer"] == scorer].copy()
     if clip.empty:
         raise SystemExit(f"No CLIP scores for scorer {scorer}.")
-    # Percentile of each image's CLIP score within its model, so models with different score scales compare.
     clip["clip_pct"] = clip.groupby("model")["clip_score"].rank(pct=True)
     ratings = read_csv_or_empty(RATINGS_CSV)
     gens = read_csv_or_empty(GENERATIONS_CSV)
@@ -68,7 +50,6 @@ def se(x):
     return x.std(ddof=1) / np.sqrt(len(x)) if len(x) > 1 else np.nan
 
 
-# ----------------------------------------------------------------------------- stats
 def rater_reliability(ratings):
     rows = []
     if ratings.empty or ratings["rater"].nunique() < 2:
@@ -99,16 +80,13 @@ def rater_reliability(ratings):
 
 
 def pairwise_concordance(df):
-    """Within each prompt: over image pairs where humans clearly differ, how often does CLIP order them the same?
-
-    This removes prompt difficulty from the comparison (CLIP scores are not comparable across prompts).
-    """
+    """Share of same-prompt image pairs (human scores differ by 1+) that CLIP orders the same way."""
     agree = total = 0
     for _, g in df.groupby("prompt_id"):
         v = g[["clip_score", "human_overall"]].to_numpy()
         for i, j in itertools.combinations(range(len(v)), 2):
             dh = v[i, 1] - v[j, 1]
-            if abs(dh) < 1:  # humans don't clearly prefer either image
+            if abs(dh) < 1:
                 continue
             total += 1
             agree += np.sign(v[i, 0] - v[j, 0]) == np.sign(dh)
@@ -116,7 +94,7 @@ def pairwise_concordance(df):
 
 
 def model_winner_agreement(df):
-    """Per prompt and model pair: does CLIP pick the same winning model as the human raters?"""
+    """Per prompt: does CLIP pick the same better model as the human raters?"""
     m = df.groupby(["prompt_id", "category", "model"])[["clip_score", "human_overall"]].mean().reset_index()
     rows = []
     for (pid, cat), g in m.groupby(["prompt_id", "category"]):
@@ -139,7 +117,6 @@ def agreement_table(df):
             row["spearman_clip_vs_overall"] = round(spearmanr(g["clip_score"], g["human_overall"]).statistic, 3)
         passed = (g["human_pass"] >= 0.5).astype(int)
         if passed.nunique() == 2:
-            # AUC: probability CLIP ranks a human-passed image above a human-failed one. 0.5 = coin flip.
             row["auc_clip_predicts_pass"] = round(roc_auc_score(passed, g["clip_pct"]), 3)
         c, n = pairwise_concordance(g)
         row["within_prompt_concordance"] = round(c, 3) if n else np.nan
@@ -155,7 +132,6 @@ def agreement_table(df):
     return pd.DataFrame(rows)
 
 
-# ----------------------------------------------------------------------------- charts
 def grouped_bars(summary, value, err, ylabel, title, path, ylim=None, pct=False):
     models = sorted(summary["model"].unique())
     cats = [c for c in CATEGORY_ORDER if c in set(summary["category"])]
@@ -182,7 +158,6 @@ def grouped_bars(summary, value, err, ylabel, title, path, ylim=None, pct=False)
 
 
 def dot_plot(summary, path):
-    """CLIP means as dots: CLIP scores live in a narrow band, and bars would force a misleading zero baseline."""
     models = sorted(summary["model"].unique())
     cats = [c for c in CATEGORY_ORDER if c in set(summary["category"])]
     fig, ax = plt.subplots(figsize=(12, 6.2))
@@ -244,7 +219,6 @@ def agreement_bars(agree, winners, path):
     win = winners.groupby("category")["agree"].mean().reindex(cats) if len(winners) else pd.Series(np.nan, cats)
     fig, ax = plt.subplots(figsize=(12, 6.2))
     x = np.arange(len(cats))
-    # Neutral + violet on purpose: these bars are metrics, so they must not reuse the model colors.
     ax.bar(x - 0.2, a["within_prompt_concordance"], 0.37, color=style.INK_2, label="Image pairs, same prompt")
     ax.bar(x + 0.2, win, 0.37, color="#6250d6", label="Which model won, per prompt")
     ax.axhline(0.5, color=style.INK_2, lw=1.2, ls="--")
@@ -262,7 +236,6 @@ def agreement_bars(agree, winners, path):
 
 
 def failure_gallery(df, prompts, path, k=3):
-    """Each model's most embarrassing failures: humans failed it, CLIP liked it most."""
     models = sorted(df["model"].unique())
     pmap = prompts.set_index("id")["prompt"]
     fig, axes = plt.subplots(len(models), k, figsize=(4.2 * k, 4.9 * len(models)), squeeze=False)
@@ -289,7 +262,6 @@ def failure_gallery(df, prompts, path, k=3):
     plt.close(fig)
 
 
-# ----------------------------------------------------------------------------- main
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--scorer", default=DEFAULT_SCORER)
@@ -304,7 +276,6 @@ def main():
     df = clip.merge(human, on="key", how="left")
     rated = df.dropna(subset=["human_overall"]).copy()
 
-    # Summary by model x category
     summ = (df.groupby(["model", "category"])
               .agg(n_images=("key", "size"), clip_mean=("clip_score", "mean"), clip_se=("clip_score", se),
                    human_pass=("human_pass", "mean"), human_pass_se=("human_pass", se),

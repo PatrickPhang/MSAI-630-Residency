@@ -1,15 +1,4 @@
-"""Demo-day app.
-
-Tab 1 Live: type a prompt (or pick a benchmark prompt), generate with SDXL-Turbo and SD 1.5 on the
-             Colab GPU, and show each image's CLIPScore side by side. No API keys involved.
-Tab 2 Browse: any benchmark prompt -> all images, with CLIP score and human score per image.
-Tab 3 Failures: the failure gallery and charts from analyze.py.
-
-  python demo_app.py --share
-
-Models are loaded and warmed up at launch, so the first click on stage is as fast as the rest.
-Tabs 2 and 3 only read saved files, so they still work if the GPU runtime dies: that is the fallback.
-"""
+"""Demo app: live generation with CLIP scores, benchmark browser, and result charts."""
 import argparse
 
 import gradio as gr

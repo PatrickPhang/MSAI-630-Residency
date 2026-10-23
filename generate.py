@@ -1,9 +1,4 @@
-"""Generate benchmark images. Resumable: images that already exist are skipped.
-
-Examples:
-  python generate.py --models sdxl_turbo sd15              # full benchmark (~15-20 min on a T4)
-  python generate.py --models sdxl_turbo --ids C01 T01     # quick smoke test
-"""
+"""Generate benchmark images. Existing images are skipped."""
 import argparse
 import time
 from datetime import datetime, timezone
@@ -44,14 +39,13 @@ def main():
             except torch.cuda.OutOfMemoryError:
                 free_gpu()
                 img, status, info = None, "error", "CUDA out of memory"
-            except Exception as e:  # keep going; log the failure
+            except Exception as e:
                 img, status, info = None, "error", repr(e)[:300]
             dt = time.time() - t0
             path = image_path(model, p["id"], seed)
             if img is not None:
                 path.parent.mkdir(parents=True, exist_ok=True)
                 img.save(path)
-            # Errors are retried on the next run, so they go to a separate log instead of generations.csv.
             log = GENERATIONS_CSV if status != "error" else GENERATIONS_CSV.with_name("generation_errors.csv")
             append_row(log, {
                 "model": model, "prompt_id": p["id"], "category": p["category"], "seed": seed,
