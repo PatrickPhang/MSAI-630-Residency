@@ -1,0 +1,10 @@
+scope,group,n_images,spearman_clip_vs_overall,auc_clip_predicts_pass,within_prompt_concordance,n_pairs
+overall,all,96,0.529,0.729,0.769,26
+category,counting,16,0.599,0.833,0.667,3
+category,spatial,16,0.651,0.77,0.8,5
+category,color_binding,16,0.591,0.802,0.75,4
+category,text_rendering,16,0.79,0.786,1.0,6
+category,rare_words,16,0.202,0.736,0.5,4
+category,conflicting,16,0.589,0.917,0.75,4
+model,sd15,48,0.68,0.931,,0
+model,sdxl_turbo,48,0.211,0.593,,0

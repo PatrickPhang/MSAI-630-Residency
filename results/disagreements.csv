@@ -1,0 +1,15 @@
+disagreement,model,category,prompt_id,seed,prompt,clip_score,clip_pct,human_pass,human_overall,path
+clip_fooled,sdxl_turbo,color_binding,B01,42,A blue cube next to a yellow sphere,43.69,0.9583333333333334,0.0,3.0,/content/drive/MyDrive/mini-drawbench-data/images/sdxl_turbo/B01_s42.png
+clip_fooled,sdxl_turbo,text_rendering,T03,42,A green street sign that says 'Cumberland Ave',43.052,0.9375,0.0,3.0,/content/drive/MyDrive/mini-drawbench-data/images/sdxl_turbo/T03_s42.png
+clip_fooled,sd15,color_binding,B03,42,A woman wearing a purple hat and an orange scarf,38.746,0.9166666666666666,0.0,3.0,/content/drive/MyDrive/mini-drawbench-data/images/sd15/B03_s42.png
+clip_fooled,sdxl_turbo,counting,C08,42,Nine balloons tied to a mailbox,42.404,0.9166666666666666,0.0,3.5,/content/drive/MyDrive/mini-drawbench-data/images/sdxl_turbo/C08_s42.png
+clip_fooled,sdxl_turbo,text_rendering,T05,42,A chalkboard that reads 'E = mc2',41.794,0.8958333333333334,0.0,2.5,/content/drive/MyDrive/mini-drawbench-data/images/sdxl_turbo/T05_s42.png
+clip_fooled,sdxl_turbo,text_rendering,T01,42,A storefront sign that reads 'OPEN 24 HOURS',41.519,0.875,0.0,4.5,/content/drive/MyDrive/mini-drawbench-data/images/sdxl_turbo/T01_s42.png
+clip_fooled,sdxl_turbo,color_binding,B03,42,A woman wearing a purple hat and an orange scarf,41.51,0.8541666666666666,0.0,3.5,/content/drive/MyDrive/mini-drawbench-data/images/sdxl_turbo/B03_s42.png
+clip_fooled,sd15,text_rendering,T04,42,A birthday cake with 'Happy 30th Ana' written in icing,37.364,0.8333333333333334,0.0,4.0,/content/drive/MyDrive/mini-drawbench-data/images/sd15/T04_s42.png
+clip_fooled,sdxl_turbo,counting,C04,42,Two dogs and one cat playing in a park,41.418,0.8333333333333334,0.0,3.0,/content/drive/MyDrive/mini-drawbench-data/images/sdxl_turbo/C04_s42.png
+clip_fooled,sd15,rare_words,R06,42,A bowl of rambutan on a kitchen counter,37.311,0.8125,0.0,3.5,/content/drive/MyDrive/mini-drawbench-data/images/sd15/R06_s42.png
+clip_fooled,sd15,spatial,S04,42,"A book on top of a closed laptop, with a coffee mug to the right of the laptop",36.922,0.7916666666666666,0.0,3.0,/content/drive/MyDrive/mini-drawbench-data/images/sd15/S04_s42.png
+clip_too_harsh,sdxl_turbo,spatial,S08,42,A clock hanging on the wall above a fireplace,34.304,0.25,1.0,3.5,/content/drive/MyDrive/mini-drawbench-data/images/sdxl_turbo/S08_s42.png
+clip_too_harsh,sdxl_turbo,conflicting,X04,42,A transparent wooden chair,33.96,0.20833333333333334,1.0,4.5,/content/drive/MyDrive/mini-drawbench-data/images/sdxl_turbo/X04_s42.png
+clip_too_harsh,sdxl_turbo,spatial,S05,42,A horse standing behind a wooden fence,32.526,0.16666666666666666,0.5,4.5,/content/drive/MyDrive/mini-drawbench-data/images/sdxl_turbo/S05_s42.png

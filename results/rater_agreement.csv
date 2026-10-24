@@ -1,0 +1,4 @@
+measure,raters,value,n_images,pct_agree
+krippendorff_alpha_all_pass,all,0.431,96,
+krippendorff_alpha_overall,all,0.308,96,
+cohen_kappa_all_pass,harshada vs patrick,0.444,96,0.792
